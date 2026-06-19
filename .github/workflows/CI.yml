@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -27,6 +27,8 @@ jobs:
 
       - name: Run tests
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Fallback ensures the parser's non-empty-key guard doesn't short-circuit
+          # in dependabot PRs where GitHub withholds secrets. The real API is mocked.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'dummy-key-for-ci' }}
         run: |
           PYTHONPATH=src pytest tests/test_parser.py --verbose
